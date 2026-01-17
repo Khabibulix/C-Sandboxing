@@ -29,14 +29,25 @@ void bubble_sort(int array[], int size){
 
 int main(int argc, char *argv[]){
     int array[MAX_SIZE];
+    int size;
 
-    for (int i = 0; i < argc - 1; i++){
-        array[i] = atoi(argv[i+1]);
+    if (argc > 1) {
+        size = argc - 1;
+        for (int i = 0; i < size; i++){
+            array[i] = atoi(argv[i+1]);
+        }
+    } else {
+        int default_array[] = {5, 2, 9, 1, 5, 6};
+        size = 6;
+        for (int i = 0; i < size; i++){
+            array[i] = default_array[i];
+        }
     }
 
-    bubble_sort(array, argc - 1);
+
+    bubble_sort(array, size);
     
-    for (int i = 0; i < argc - 1; i++){
+    for (int i = 0; i < size; i++){
         printf("%d ", array[i]);
     }
     printf("\n");
