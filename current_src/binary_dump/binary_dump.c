@@ -1,21 +1,26 @@
 #include <stdio.h>
+#include <string.h>
+#include "binary_dump.h"
 
 int main(){
-    FILE *file;
-    size_t bytes_read;
-    size_t offset = 0;
-    file = fopen("sample.txt", "rb");
+    FILE * file;
+    struct header h;
+
+    file = fopen("dummy.bin", "rb");
     if (!file) return 1;
 
-    char buffer[100];
+    if (fread(&h, sizeof(h), 1, file) != 1) return 1;
 
-    while((bytes_read = fread(buffer, 1, 16, file)) > 0){
-        printf("%08zx ", offset);
-        for(size_t i = 0; i < bytes_read; i++){
-            printf("%02x ", buffer[i]);
-        }
-        printf("\n");
-        offset += bytes_read;
+    if (memcmp(h.magic, "BDMP", 4) != 0){
+        printf("KO\n");
+        return 1;
     }
+
+    if (h.version != 1){
+        printf("KO\n");
+        return 1;
+    }
+
+    printf("OK\n");
 }
 
