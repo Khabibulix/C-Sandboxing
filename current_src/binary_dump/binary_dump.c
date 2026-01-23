@@ -26,7 +26,17 @@ int main(){
 
     printf("ASCII_NAME is %s\n",name);
 
-    // Validation payload
+    // Remaining bytes -> long remaining
+    long current_pos = ftell(file);
+    if (current_pos < 0) return 1;
+    if (fseek(file, 0, SEEK_END) != 0) return 1;
+    long end_pos = ftell(file);
+    if (end_pos < 0) return 1;
+    if (fseek(file,current_pos, SEEK_SET) != 0) return 1;
+    long remaining = end_pos - current_pos;
+    if (h.payload_size <= 0 || h.payload_size > remaining) return 1;
+
+    // Validate payload
     unsigned char *payload = malloc(h.payload_size);
     if (!payload) return 1;
     if (fread(payload, 1, h.payload_size, file) != h.payload_size){
