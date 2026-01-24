@@ -6,38 +6,28 @@
 int main(){
     FILE * file;
     struct header h;
-    char name[256];
-    size_t max = sizeof(name) - 1;
-    size_t index = 0;
-    int c;
 
     file = fopen("dummy.bin", "rb");
-    if (!file) return 1;
+    if (!file) return 2;
 
     //Validate header struct
-    if (fread(&h, sizeof(h), 1, file) != 1) return 1;
-    if (memcmp(h.magic, "BDMP", 4) != 0){printf("KO\n"); return 1;}
-    if (h.version != 1){printf("KO\n"); return 1;}
+    if (fread(&h, sizeof(h), 1, file) != 1) return 3;
+    if (memcmp(h.magic, "BDMP", 4) != 0){printf("KO\n"); return 3;}
+    if (h.version != 1){printf("KO\n"); return 3;}
 
-    while (index < max){
-        c = fgetc(file);
-        if (c == EOF) return 1;
-        name[index++] = (char)c;
-        if (c == '\0') break;
-    }
+    uint8_t ascii_buff[65];
+    memcpy(ascii_buff, h.ascii, 64);
+    ascii_buff[64] = '\0';
 
-    if (index == max && name[index-1] != '\0') return 1;
-    name[index] = '\0';
-
-    printf("ASCII_NAME is %s\n",name);
+    printf("ASCII_file_NAME is %s\n",ascii_buff);
 
     // Remaining bytes -> long remaining
     long current_pos = ftell(file);
-    if (current_pos < 0) return 1;
-    if (fseek(file, 0, SEEK_END) != 0) return 1;
+    if (current_pos < 0) return 6;
+    if (fseek(file, 0, SEEK_END) != 0) return 6;
     long end_pos = ftell(file);
-    if (end_pos < 0) return 1;
-    if (fseek(file,current_pos, SEEK_SET) != 0) return 1;
+    if (end_pos < 0) return 6;
+    if (fseek(file,current_pos, SEEK_SET) != 0) return 6;
     long remaining = end_pos - current_pos;
     if (h.payload_size > remaining) return 1;
 
@@ -57,7 +47,6 @@ int main(){
     printf("\n");
 
     free(payload);
-
 
 }
 

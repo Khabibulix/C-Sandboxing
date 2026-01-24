@@ -10,6 +10,7 @@ struct header {
     uint8_t flags[1];
     uint16_t header_size;
     uint32_t payload_size;
+    uint8_t ascii[64];
 };
 
 #endif
