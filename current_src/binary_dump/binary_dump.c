@@ -6,6 +6,7 @@
 int main(){
     FILE * file;
     struct header h;
+    size_t MAX_PAYLOAD_SIZE = 1024 * 1024; // 1 MB
 
     file = fopen("dummy.bin", "rb");
     if (!file) return 2;
@@ -31,9 +32,17 @@ int main(){
     long remaining = end_pos - current_pos;
     if (h.payload_size > remaining) return 1;
 
+
+    unsigned char *payload;
     // Validate payload
-    unsigned char *payload = malloc(h.payload_size);
-    if (!payload) return 1;
+    if (h.payload_size <= MAX_PAYLOAD_SIZE && h.payload_size <= (size_t)remaining){
+        payload = malloc(h.payload_size);
+        if (!payload) return 1;
+
+    } else {
+        return 7;
+    }
+
     if (fread(payload, 1, h.payload_size, file) != h.payload_size){
         free(payload);
         return 1;
