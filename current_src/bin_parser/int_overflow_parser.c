@@ -49,23 +49,24 @@ int main(){
     if (h.payload_size > (long)(file_size - sizeof(struct header))) return ERR_PAYLOAD_TRUNC;
     if (h.header_size != sizeof(h)) return ERR_HEADER_INVALID;
 
+    int signed_len = (int) h.payload_size; // Here!
 
     uint8_t ascii_buff[65];
     memcpy(ascii_buff, h.ascii, 64);
     ascii_buff[64] = '\0';
     printf("ASCII_file_NAME is %s\n",ascii_buff);
 
-    unsigned char *payload = malloc(h.payload_size);
+    unsigned char *payload = malloc(signed_len);
     if (!payload) return ERR_PAYLOAD_TRUNC;
 
 
-    if (fread(payload, 1, h.payload_size, file) != h.payload_size){
+    if (fread(payload, 1, signed_len, file) != signed_len){
         free(payload);
         return ERR_PAYLOAD_TRUNC;
     } 
     
     int payload_is_empty = 1;
-    for (int i = 0; i < h.payload_size; i++){
+    for (int i = 0; i < signed_len; i++){
         if (payload[i] != 0){
             payload_is_empty = 0;
             break;
@@ -75,7 +76,7 @@ int main(){
 
     // Verify and display payload
     printf("Payload hex: ");
-    for(int i = 0; i < h.payload_size; i++){
+    for(int i = 0; i < signed_len; i++){
         printf("%02X ", payload[i]);
     }
     printf("\n");
