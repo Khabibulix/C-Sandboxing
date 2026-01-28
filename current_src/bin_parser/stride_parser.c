@@ -3,14 +3,31 @@
 #include <stdint.h>
 #include <string.h>
 
+#define CHUNK_SIZE 16
+
 void analyse_with_stride(uint8_t *buf, size_t file_size, size_t stride){
-    size_t cursor = 0;
+    size_t chunk_start = 0;
 
-    while(cursor < file_size){
-        printf("Stride %zu, Offset %zu :", stride, cursor);
-        printf("%02X\n", buf[cursor]);
+    while(chunk_start < file_size){
+        printf("Stride %zu, Offset %zu :", stride, chunk_start);
 
-        cursor += stride;
+        for (size_t i = 0; i < CHUNK_SIZE && (chunk_start + i) < file_size; i++){
+            size_t idx = chunk_start + i * stride;
+            
+            if (idx < file_size){
+                uint8_t oct = buf[idx];
+                
+                if (oct >= 0x20 && oct <= 0x7E)
+                    printf("%c", oct);
+                else
+                    printf(".");
+            } else {
+                printf(" ");
+            }
+        }
+
+        printf("\n");
+        chunk_start += CHUNK_SIZE;
     }
 }
 
