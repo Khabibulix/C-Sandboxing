@@ -2,6 +2,7 @@
 
 BIN=./parser.exe
 DIR=cases
+KEEPERS=keepers
 
 for f in "$DIR"/*.bin; do
 	$BIN "$f"
@@ -13,6 +14,7 @@ for f in "$DIR"/*.bin; do
 	    ;;
 	  *)
 	    echo "KEEP $(basename "$f") -> $ret" 
+	    mv "$f" "$KEEPERS/"
 	    ;;
 	esac
 done
